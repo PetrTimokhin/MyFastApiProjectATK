@@ -1,0 +1,2 @@
+# MyFastApiProjectATK
+Проект на FastAPI.
