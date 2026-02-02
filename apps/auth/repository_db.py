@@ -1,0 +1,29 @@
+from typing import Optional
+
+from apps.database_store_dct import ContextManagerDB, IdCounterUser
+
+
+def get_user_by_email_from_db(email: str) -> Optional[dict]:
+    with ContextManagerDB() as db:
+        db_dct = db.get_store()
+        for user in db_dct.values():
+            if user['email'] == email:
+                return user
+        return None
+
+
+def create_user_in_db(user_data: dict) -> dict:
+    with ContextManagerDB() as db:
+        new_id = IdCounterUser._get_next_id()
+
+        db_dct = db.get_store()
+        user_data['id'] = new_id
+        db_dct[new_id] = user_data
+
+        print(f'В БД создан пользователь:'
+              f' {new_id}\n'
+              f' {user_data['username']}\n'
+              f' {user_data['email']}\n'
+              f' {user_data['password']}\n')
+
+        return db_dct.get(new_id)
