@@ -3,7 +3,7 @@ from typing import Dict, Any, Optional
 from apps.auth.repository_hash import get_password_hash
 from apps.auth.schemas import UserRegister
 
-from apps.auth.repository_db import get_user_by_email_from_db, \
+from apps.database.repository_db import get_user_by_email_from_db, \
     create_user_in_db
 
 

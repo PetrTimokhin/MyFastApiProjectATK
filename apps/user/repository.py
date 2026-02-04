@@ -1,6 +1,6 @@
 from typing import Dict, Any, Optional, List
 
-from apps.database_store_dct import IdCounterUser, ContextManagerDB
+from apps.database.database_store_dct import IdCounterUser, ContextManagerDB
 
 
 def create_user_in_db(user_data: dict) -> dict:

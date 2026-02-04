@@ -1,5 +1,6 @@
 from fastapi import Depends, HTTPException
-from jwt import PyJWTError
+# from jwt import PyJWTError
+from jose import jwt, JWTError
 from starlette import status
 
 from apps.auth.repository_token import decode_token
@@ -17,12 +18,13 @@ def get_current_user_data(token: str = Depends(oauth2_scheme)) -> dict:
         email: str = payload.get("email")
 
         if user_id is None or email is None:
+            print('Функция get_current_user_data не нашла id или email!')
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                                 detail="Invalid token payload")
         print(user_id, email)
         return {"user_id": user_id, "email": email}
 
-    except PyJWTError:
+    except JWTError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid authentication credentials",

@@ -61,14 +61,21 @@ class ContextManagerDB:
         self.settings = settings
 
     def __enter__(self) -> DataBaseStore:
-        print(f"[DB CONNECT] присоединение к {self.settings.db_address}")
-        print("[DB CONNECT] соединение установлено!")
+        # print(f"[DB CONNECT] присоединение к {self.settings.db_address}")
+        print("[DB CONNECT] соединение с БД установлено!")
         return DataBaseStore()
 
     def __exit__(self, exc_type, exc, tb):
-        print(f"[DB DISCONNECT] отсоединение от {self.settings.db_address}")
-        print("[DB DISCONNECT] соединение закрыто!")
+        # print(f"[DB DISCONNECT] отсоединение от {self.settings.db_address}")
+        print("[DB DISCONNECT] соединение с БД закрыто!")
 
+# Контекстный менеджер для инициализации (полезно для реальных БД)
+# @asynccontextmanager
+# async def lifespan(app: FastAPI):
+#     # Здесь могла бы быть инициализация БД
+#     print("Application startup...")
+#     yield  # yield db например
+#     print("Application shutdown...")
 
 # # проверка работы модуля
 # if __name__ == '__main__':

@@ -1,6 +1,7 @@
 import uvicorn
 from fastapi import FastAPI
 
+# from apps.auth.middleware import AuthMiddleware
 from routers.api_v1_router import api_router
 
 
@@ -11,6 +12,8 @@ app = FastAPI()
 def read_root():
     return "Hello FastAPI World"
 
+
+# app.add_middleware(AuthMiddleware)
 
 app.include_router(api_router)
 # app.include_router(auth_router)

@@ -2,6 +2,7 @@ from typing import List
 
 from fastapi import APIRouter, HTTPException, Query, Depends
 from starlette import status
+from starlette.requests import Request
 
 from apps.auth.service_current_user import get_current_user_data
 from apps.user.schemas import UserCreate, UserResponse, UserUpdate
@@ -113,5 +114,25 @@ def delete_user(user_id: int):
     return deleted_user
 
 
+# НОВЫЙ РОУТ: Получить данные пользователя через Middleware state
+@user_router.get("/profile_via_middleware", response_model=UserResponse)
+def read_profile_via_middleware(request: Request):
+    """
+    Получает user_id и email, установленные в AuthMiddleware.
+    Роут защищен MiddleWare, а не Dependency.
+    """
 
+    user_id = request.state.user_id
+    email = request.state.email
+
+    if not user_id:
+        # Этого не должно случиться, если Middleware не пропустил запрос
+        raise HTTPException(status_code=500,
+                            detail="User ID not found in request state")
+
+    # Используем user_id для получения полных данных из User Service
+    user = get_user(user_id)
+    print(
+        f"Middleware Auth: Пользователь ID {user_id} ({email}) запросил профиль.")
+    return user
 

@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, status, Depends, Body
-from fastapi.security import OAuth2PasswordBearer
-from jwt import PyJWTError
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+# from jwt import PyJWTError
+from jose import jwt, JWTError
 
 from apps.auth.repository_token import decode_token, create_access_token, \
     create_refresh_token
@@ -12,11 +13,7 @@ from apps.auth.service_registry import is_user_exist, register_new_user
 # Настройка OAuth2 для Dependency.
 # Создает экземпляр схемы OAuth2, указывая, что точка, где пользователи могут
 # получить токен (через логин), будет иметь путь /auth/login.
-oauth2_scheme = OAuth2PasswordBearer(
-    tokenUrl="/auth/login",
-    # URL, куда перенаправить клиента для получения токена
-    auto_error=True  # Бросать 401, если токен отсутствует
-)
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 auth_router = APIRouter(prefix="/auth", tags=["Auth"])
 
@@ -40,12 +37,14 @@ def register_user(user_in: UserRegister):
     return created_user
 
 
-# 2. Вход
+# 2. Вход Авторизация login
 @auth_router.post("/login",
                   response_model=Token,
                   summary="Авторизация пользователя")
-def login_for_access_token(form_data: UserLogin):
-    user_payload = authenticate_user(form_data.email, form_data.password)
+def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
+    print('username', form_data.username, 'password', form_data.password)
+    user_payload = authenticate_user(form_data.username, form_data.password)
+    # возвращаем id, username, email (?)
 
     if not user_payload:
         raise HTTPException(
@@ -58,6 +57,7 @@ def login_for_access_token(form_data: UserLogin):
     return tokens
 
 # 3. Обновляет Access Token, используя валидный Refresh Token
+
 
 # Новая Dependency для извлечения Refresh Token из тела запроса
 def get_current_refresh_token(refresh_token: str = Body(...)):
@@ -104,7 +104,7 @@ def refresh_token_endpoint(refresh_token_str: str
             "token_type": "bearer"
         }
 
-    except PyJWTError:
+    except JWTError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid or expired refresh token",
