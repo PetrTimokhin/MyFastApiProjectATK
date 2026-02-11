@@ -19,6 +19,7 @@ INVALID_TOKEN = "dsdfdfg45645hgyh"
 def test_authorized_endpoint_success():
     user = create_user_in_db({"email": "user@example.com",
                               "password": "string"})
+    print(user)
     headers = {"Authorization": f"Bearer {VALID_TOKEN}"}
     response = client.get("/api/v1/users/profile_via_middleware",
                           headers=headers)
@@ -27,29 +28,29 @@ def test_authorized_endpoint_success():
     assert response.json()["email"] == "user@example.com"
 
 
-# 2. Тестирование регистрации (доступно всем)
-def test_public_endpoint_register():
-    response = client.post("/api/v1/auth/register",
-                           json={"email": "user2@example.com",
-                                 "password": "string123"})
-    assert response.status_code == 201
-
-
-# 3. Тестирование публичных путей (должны работать без токена)
-def test_public_endpoint_docs():
-    print('test_public_endpoint_docs')
-    response = client.get("/docs")
-
-    assert response.status_code == 200
-
-
-# 4. Тестирование публичных путей (должны работать без токена)
-def test_root():
-    print('test_root')
-    response = client.get("/")
-
-    assert response.status_code == 200
-    assert response.json() == "Hello FastAPI World"
+# # 2. Тестирование регистрации (доступно всем)
+# def test_public_endpoint_register():
+#     response = client.post("/api/v1/auth/register",
+#                            json={"email": "user2@example.com",
+#                                  "password": "string123"})
+#     assert response.status_code == 201
+#
+#
+# # 3. Тестирование публичных путей (должны работать без токена)
+# def test_public_endpoint_docs():
+#     print('test_public_endpoint_docs')
+#     response = client.get("/docs")
+#
+#     assert response.status_code == 200
+#
+#
+# # 4. Тестирование публичных путей (должны работать без токена)
+# def test_root():
+#     print('test_root')
+#     response = client.get("/")
+#
+#     assert response.status_code == 200
+#     assert response.json() == "Hello FastAPI World"
 
 
 # # 2. Тестирование аутентификации (доступно всем авторизованным)

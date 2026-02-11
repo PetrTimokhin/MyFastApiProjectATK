@@ -16,30 +16,19 @@ def authenticate_user(email: str,
         # возвращает словарь с (id, username, email, password) или None
 
         if not user_by_email:
-            print('Пользователь с данным email не найден!')
+            print('Пользователь c email не найден! '
+                  'servise_login.authenticate_user')
             return None
 
         # 2. Проверяем пароль
-        print("Сверка паролей:", verify_hashed_password(password,
-                                      user_by_email['password']))
         if not verify_hashed_password(password,
                                       user_by_email['password']):
-            print('Присланный пароль:', password)
-            print('Пароль из базы:', user_by_email['password'])
-            print('Проверка хеширования пароля:', get_password_hash(password))
             return None
-
-
-        print('Присланный пароль:', password)
-        print('Пароль из базы:', user_by_email['password'])
-        print(f'Проверка хеширования пароля:{password} = {get_password_hash(password)}')
-        print(f'Проверка хеширования пароля:{password} = {get_password_hash(password)}')
 
         jwt_payload_data = {
             "user_id": user_by_email['id'],
             "email": user_by_email['email']
         }
-        print('Возвращаем для payload', jwt_payload_data)
 
         # 3. Возвращаем данные для JWT payload
         return jwt_payload_data

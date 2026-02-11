@@ -4,7 +4,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 
 from apps.auth.repository_token import decode_token
 
-PROTECTED_PATHS = ('/api/v1/profile_via_middleware',)
+PROTECTED_PATHS = ('/api/v1/users/profile_via_middleware',)
 # if path.startswith("/docs") or path.startswith("/openapi.json"):
 
 
@@ -19,8 +19,9 @@ def get_token_from_header(request: Request) -> str | None:
 
 async def jwt_authentication_middleware(request: Request, call_next):
     """ Функция Middleware."""
+    print('работает middleware!!!')
     # 1. Определяем, нужно ли применять аутентификацию
-    # Мы пропускаем  всех кроме "/api/v1/profile_via_middleware"
+    # Мы пропускаем  всех кроме "/api/v1/users/profile_via_middleware"
     path = request.scope.get("path")
 
     if not path.startswith(PROTECTED_PATHS):
@@ -32,7 +33,6 @@ async def jwt_authentication_middleware(request: Request, call_next):
     token = get_token_from_header(request)
 
     if not token:
-        print('Токена нет в заголовке!')
         # Токен отсутствует, но это не публичный маршрут.
         # Если это НЕ публичный маршрут, требуем аутентификации.
         return JSONResponse(
@@ -43,10 +43,8 @@ async def jwt_authentication_middleware(request: Request, call_next):
 
     # 3. Декодируем токен
     payload = decode_token(token)
-    print('payload или decode_token(token)', payload)
 
     if not payload:
-        print('Токен недействителен!')
         # Токен недействителен
         return JSONResponse(
             content={"detail": "Неверный или истекший токен"},

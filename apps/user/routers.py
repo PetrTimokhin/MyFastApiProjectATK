@@ -93,12 +93,9 @@ def read_profile_via_middleware(request: Request) -> dict:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                             detail="User ID not found in request state",
                             headers={"WWW-Authenticate": "Bearer"})
-    print('request.state.email', request.state.email)
     if email:
         # Используем email для получения полных данных из User Service
         user = get_user_by_email(email)
-        print("Работает роут!!!")
-        print('get_user(email):', user)
         return user
 
 

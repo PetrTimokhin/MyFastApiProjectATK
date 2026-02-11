@@ -7,17 +7,13 @@ from settings.settings import settings
 # --- 2. JWT Функции ---
 def create_access_token(data: Dict[str, Any],
                         expires_delta: timedelta = None) -> str:
-    print("Формирование access токена")
     to_encode = data.copy()
 
     expire = datetime.now() + (expires_delta or timedelta(
         minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES))
-    print("expire", expire)
-    to_encode.update({"exp": expire})
-    print('to_encode', to_encode)
 
+    to_encode.update({"exp": expire})
     encoded_jwt = encode_token(to_encode)
-    print('jwt', encoded_jwt)
     return encoded_jwt
 
 

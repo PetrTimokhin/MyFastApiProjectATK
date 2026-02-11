@@ -43,9 +43,7 @@ def register_user(user_in: UserRegister):
                   response_model=Token,
                   summary="Авторизация пользователя")
 def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
-    print('username', form_data.username, 'password', form_data.password)
     user_payload = authenticate_user(form_data.username, form_data.password)
-    print()
 
     if not user_payload:
         raise HTTPException(
