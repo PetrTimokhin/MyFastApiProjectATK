@@ -1,5 +1,4 @@
 from fastapi import Depends, HTTPException
-# from jwt import PyJWTError
 from jose import jwt, JWTError
 from starlette import status
 

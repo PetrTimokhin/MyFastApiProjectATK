@@ -5,7 +5,6 @@ from pydantic import BaseModel, EmailStr, Field, ConfigDict
 
 
 class User(BaseModel):
-    name: str = Field(..., min_length=3)
     email: EmailStr
 
 
@@ -14,7 +13,7 @@ class UserCreate(User):
 
 
 class UserUpdate(User):
-    name: Optional[str] = Field(..., min_length=3)
+    username: Optional[str] = Field(..., min_length=3)
     email: Optional[EmailStr] = None
     password: Optional[str] = None
 

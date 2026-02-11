@@ -37,7 +37,6 @@ def authenticate_user(email: str,
 
         jwt_payload_data = {
             "user_id": user_by_email['id'],
-            "username": user_by_email['username'],
             "email": user_by_email['email']
         }
         print('Возвращаем для payload', jwt_payload_data)

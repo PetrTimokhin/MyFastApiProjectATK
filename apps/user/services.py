@@ -9,6 +9,7 @@ from apps.user.repository import (get_all_users_from_db,
                                   update_user_in_db, delete_user_from_db,
                                   create_user_in_db)
 from apps.user.schemas import UserCreate, UserUpdate
+from apps.database.repository_db import get_user_by_email_from_db
 
 
 def check_if_user_exists_by_email(email_value: str,
@@ -39,6 +40,13 @@ def get_user(user_id: int) -> dict:
                             detail="User not found")
     return user
 
+
+def get_user_by_email(email: str) -> dict:
+    user = get_user_by_email_from_db(email)
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail="User not found")
+    return user
 
 def get_multiple_users(user_ids: List[int]) -> List[dict]:
     return get_users_by_ids_from_db(user_ids)

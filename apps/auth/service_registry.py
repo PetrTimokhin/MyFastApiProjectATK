@@ -22,6 +22,5 @@ def register_new_user(user_in: UserRegister) -> Dict[str, Any]:
 
     return {
         "id": new_user_data['id'],
-        "username": new_user_data['username'],
         "email": new_user_data['email']
             }

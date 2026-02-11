@@ -7,7 +7,7 @@ from starlette.requests import Request
 from apps.auth.service_current_user import get_current_user_data
 from apps.user.schemas import UserCreate, UserResponse, UserUpdate
 from apps.user.services import create_new_user, get_user, get_all_users, \
-    get_multiple_users, update_user_data, delete_user_data
+    get_multiple_users, update_user_data, delete_user_data, get_user_by_email
 
 user_router = APIRouter(prefix="/users", tags=["User"])
 
@@ -23,7 +23,7 @@ def create_user(user_in: UserCreate):
     return new_user
 
 
-# 4. Создать нескольких пользователей (Bulk Create)
+# 2. Создать нескольких пользователей (Bulk Create)
 @user_router.post("/bulk",
                   response_model=List[UserResponse],
                   status_code=status.HTTP_201_CREATED,
@@ -63,7 +63,7 @@ def read_all_users():
 def read_users_me(current_user_data: dict = Depends(get_current_user_data)):
     """Получить данные текущего аутентифицированного пользователя"""
 
-    user_id = current_user_data['user_id']
+    user_id = current_user_data["user_id"]
 
     # Здесь вызов сервиса пользователя для получения данных по ID
     user = get_user(user_id)
@@ -80,7 +80,29 @@ def read_users_by_ids(ids: List[int] = Query(...)):
     return get_multiple_users(ids)
 
 
-# 2. Получить одного пользователя
+# 6. Эндпойнт защищенный через middleware
+@user_router.get("/profile_via_middleware", response_model=UserResponse)
+def read_profile_via_middleware(request: Request) -> dict:
+    """
+    Получает user_id и email, установленные в jwt_authentication_middleware.
+    Роут защищен MiddleWare, а не Dependency.
+    """
+    try:
+        email = request.state.email
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                            detail="User ID not found in request state",
+                            headers={"WWW-Authenticate": "Bearer"})
+    print('request.state.email', request.state.email)
+    if email:
+        # Используем email для получения полных данных из User Service
+        user = get_user_by_email(email)
+        print("Работает роут!!!")
+        print('get_user(email):', user)
+        return user
+
+
+# 7. Получить одного пользователя
 @user_router.get("/{user_id}",
                  response_model=UserResponse,
                  summary="Получить одного пользователя по id"
@@ -88,11 +110,11 @@ def read_users_by_ids(ids: List[int] = Query(...)):
 def read_user(user_id: int):
     """Получить пользователя по ID"""
     user = get_user(user_id)
-    print(f'Получен пользователь {user['name']}')
+    print(f'Получен пользователь {user['username']}')
     return user
 
 
-# 6. Обновить данные пользователя
+# 8. Обновить данные пользователя
 @user_router.put("/{user_id}",
                  response_model=UserResponse,
                  summary="Обновление данных пользователя"
@@ -103,7 +125,7 @@ def update_user(user_id: int, user_in: UserUpdate):
     return updated_user
 
 
-# 7. Удалить пользователя
+# 9. Удалить пользователя
 @user_router.delete("/{user_id}",
                     response_model=UserResponse,
                     summary="Удалить пользователя"
@@ -114,25 +136,30 @@ def delete_user(user_id: int):
     return deleted_user
 
 
+# Middleware через класс
 # НОВЫЙ РОУТ: Получить данные пользователя через Middleware state
-@user_router.get("/profile_via_middleware", response_model=UserResponse)
-def read_profile_via_middleware(request: Request):
-    """
-    Получает user_id и email, установленные в AuthMiddleware.
-    Роут защищен MiddleWare, а не Dependency.
-    """
+# @user_router.get("/profile_via_middleware", response_model=UserResponse)
+# def read_profile_via_middleware(request: Request):
+#     """
+#     Получает user_id и email, установленные в AuthMiddleware.
+#     Роут защищен MiddleWare, а не Dependency.
+#     """
+#     response = request.state.is_authenticated
+#     print("/profile_via_middleware", response)
+#     email = request.state.email
+#     print("/profile_via_middleware", email)
+#     # user_id = request.state.user_id
+#
+#     if not email:
+#         # Этого не должно случиться, если Middleware не пропустил запрос
+#         raise HTTPException(status_code=500,
+#                             detail="User ID not found in request state")
+#
+#     # Используем user_id для получения полных данных из User Service
+#     user = get_user(email)
+#
+#     print(
+#         f"Middleware Auth: Пользователь ({email}) запросил профиль.")
+#     return user
 
-    user_id = request.state.user_id
-    email = request.state.email
-
-    if not user_id:
-        # Этого не должно случиться, если Middleware не пропустил запрос
-        raise HTTPException(status_code=500,
-                            detail="User ID not found in request state")
-
-    # Используем user_id для получения полных данных из User Service
-    user = get_user(user_id)
-    print(
-        f"Middleware Auth: Пользователь ID {user_id} ({email}) запросил профиль.")
-    return user
 

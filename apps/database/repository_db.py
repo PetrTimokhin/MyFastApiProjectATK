@@ -25,7 +25,6 @@ def create_user_in_db(user_data: dict) -> dict:
 
         print(f'В БД создан пользователь:\n'
               f' {new_id}\n'
-              f' {user_data['username']}\n'
               f' {user_data['email']}\n'
               f' {user_data['password']}')
 

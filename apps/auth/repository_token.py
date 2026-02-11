@@ -1,7 +1,5 @@
 from datetime import datetime, timedelta
 from typing import Dict, Any
-# import jwt
-# from jwt import PyJWTError
 from jose import jwt
 from settings.settings import settings
 
@@ -11,13 +9,8 @@ def create_access_token(data: Dict[str, Any],
                         expires_delta: timedelta = None) -> str:
     print("Формирование access токена")
     to_encode = data.copy()
-    print('Копия payload_data для токена', to_encode)
-    print('expires_delta', expires_delta)
-    print('datetime.utcnow()', datetime.utcnow())
-    print('timedelta', timedelta(
-        minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES))
 
-    expire = datetime.utcnow() + (expires_delta or timedelta(
+    expire = datetime.now() + (expires_delta or timedelta(
         minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES))
     print("expire", expire)
     to_encode.update({"exp": expire})

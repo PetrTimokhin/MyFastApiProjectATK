@@ -5,7 +5,8 @@ from jose import jwt, JWTError
 
 from apps.auth.repository_token import decode_token, create_access_token, \
     create_refresh_token
-from apps.auth.schemas import UserRegister, UserLogin, Token, UserAfterRegister
+from apps.auth.schemas import UserRegister, Token, \
+    UserAfterRegister
 from apps.auth.service_login import create_tokens, authenticate_user
 from apps.auth.service_registry import is_user_exist, register_new_user
 
@@ -13,7 +14,7 @@ from apps.auth.service_registry import is_user_exist, register_new_user
 # Настройка OAuth2 для Dependency.
 # Создает экземпляр схемы OAuth2, указывая, что точка, где пользователи могут
 # получить токен (через логин), будет иметь путь /auth/login.
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
 auth_router = APIRouter(prefix="/auth", tags=["Auth"])
 
@@ -44,7 +45,7 @@ def register_user(user_in: UserRegister):
 def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
     print('username', form_data.username, 'password', form_data.password)
     user_payload = authenticate_user(form_data.username, form_data.password)
-    # возвращаем id, username, email (?)
+    print()
 
     if not user_payload:
         raise HTTPException(

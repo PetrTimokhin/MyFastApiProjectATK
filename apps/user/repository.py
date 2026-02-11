@@ -20,6 +20,16 @@ def get_user_by_id_from_db(user_id: int) -> Optional[dict]:
         return db_dct.get(user_id, None)
 
 
+def get_user_by_email_from_db(email: str) -> Optional[dict]:
+    with ContextManagerDB() as db:
+        db_dct = db.get_store()
+        for user in db_dct:
+            if user['email'] == email:
+                return user
+        return None
+
+
+
 def get_users_by_ids_from_db(user_ids: List[int]) -> List[dict]:
     with ContextManagerDB() as db:
         db_dct = db.get_store()

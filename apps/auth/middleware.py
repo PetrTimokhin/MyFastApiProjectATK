@@ -1,14 +1,80 @@
-# from fastapi import Request, status
-# from fastapi.responses import JSONResponse
-# from starlette.middleware.base import BaseHTTPMiddleware
-#
-#
-# from apps.auth.repository_token import decode_token  # Импортируем функцию декодирования
-#
-#
-# # --------------------------------------------------------------------
-# # 1. Middleware для Аутентификации
-# # --------------------------------------------------------------------
+from fastapi import Request, status, Depends
+from fastapi.responses import JSONResponse
+from starlette.middleware.base import BaseHTTPMiddleware
+
+from apps.auth.repository_token import decode_token
+
+PROTECTED_PATHS = ('/api/v1/profile_via_middleware',)
+# if path.startswith("/docs") or path.startswith("/openapi.json"):
+
+
+def get_token_from_header(request: Request) -> str | None:
+    """Извлекает JWT-токен из заголовка Authorization."""
+    auth_header = request.headers.get("Authorization")
+    if auth_header and auth_header.startswith("Bearer "):
+        # Формат: "Bearer <token>"
+        return auth_header.split(" ")[1]
+    return None
+
+
+async def jwt_authentication_middleware(request: Request, call_next):
+    """ Функция Middleware."""
+    # 1. Определяем, нужно ли применять аутентификацию
+    # Мы пропускаем  всех кроме "/api/v1/profile_via_middleware"
+    path = request.scope.get("path")
+
+    if not path.startswith(PROTECTED_PATHS):
+        # Передаем запрос дальше без изменений.
+        response = await call_next(request)
+        return response
+
+    # 2. Для всех остальных путей пытаемся аутентифицировать
+    token = get_token_from_header(request)
+
+    if not token:
+        print('Токена нет в заголовке!')
+        # Токен отсутствует, но это не публичный маршрут.
+        # Если это НЕ публичный маршрут, требуем аутентификации.
+        return JSONResponse(
+            content={
+                "detail": "Необходим действительный токен аутентификации"},
+            status_code=status.HTTP_401_UNAUTHORIZED,
+        )
+
+    # 3. Декодируем токен
+    payload = decode_token(token)
+    print('payload или decode_token(token)', payload)
+
+    if not payload:
+        print('Токен недействителен!')
+        # Токен недействителен
+        return JSONResponse(
+            content={"detail": "Неверный или истекший токен"},
+            status_code=status.HTTP_403_FORBIDDEN,
+            # 403 часто лучше для невалидного токена
+        )
+
+    # 4. Успешная аутентификация
+
+    # Добавляем данные пользователя в состояние запроса
+    # Здесь вы можете добавить user_id, roles и т.д., из payload
+    email = payload.get("email", None)
+    if not email:
+        return JSONResponse(
+            status_code=403,
+            content={"detail": "Invalid token payload"}
+        )
+    request.state.email = payload.get('email', None)
+    print("request.state.__dict__:", request.state.__dict__)
+
+    # Передаем запрос дальше
+    response = await call_next(request)
+    return response
+
+
+# --------------------------------------------------------------------
+# 1. Middleware для Аутентификации # Middleware через класс
+# --------------------------------------------------------------------
 # class AuthMiddleware(BaseHTTPMiddleware):
 #
 #     async def dispatch(self, request: Request, call_next):
