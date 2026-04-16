@@ -5,11 +5,11 @@ from jose import jwt, JWTError
 
 from apps.auth.repository_token import decode_token, create_access_token, \
     create_refresh_token
-from apps.auth.schemas import UserRegister, Token, \
+from apps.auth.schemas import UserForRegister, Token, \
     UserAfterRegister
 from apps.auth.service_login import create_tokens, authenticate_user
 from apps.auth.service_registry import is_user_exist, register_new_user
-
+from apps.user.repository import UserRepository
 
 # Настройка OAuth2 для Dependency.
 # Создает экземпляр схемы OAuth2, указывая, что точка, где пользователи могут
@@ -24,13 +24,12 @@ auth_router = APIRouter(prefix="/auth", tags=["Auth"])
                   response_model=UserAfterRegister,
                   status_code=status.HTTP_201_CREATED,
                   summary="Регистрация пользователя")
-def register_user(user_in: UserRegister):
+def register_user(user_in: UserForRegister):
     # 1.1 Проверка существования email в БД
     if is_user_exist(user_in.email):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Email already registered")
-
 
     # 1.2 Регистрация нового пользователя
     created_user = register_new_user(user_in)
@@ -38,12 +37,14 @@ def register_user(user_in: UserRegister):
     return created_user
 
 
-# 2. Вход Авторизация login
+# 2. Вход Авторизация login и выдача токена
 @auth_router.post("/login",
                   response_model=Token,
                   summary="Авторизация пользователя")
 def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
+# def login_for_access_token(form_data: UserRegister):
     user_payload = authenticate_user(form_data.username, form_data.password)
+    # user_payload = authenticate_user(form_data.email, form_data.password)
 
     if not user_payload:
         raise HTTPException(
@@ -61,7 +62,6 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
 # Новая Dependency для извлечения Refresh Token из тела запроса
 def get_current_refresh_token(refresh_token: str = Body(...)):
     """Извлекает refresh_token из тела запроса."""
-    # Валидация уже происходит внутри decode_token при вызове
     return refresh_token
 
 

@@ -1,7 +1,7 @@
 from fastapi.testclient import TestClient
 
 from apps.auth.repository_token import create_access_token, decode_token
-from apps.database.repository_db import create_user_in_db
+from apps.db_dict.repository_db import create_user_in_db
 from main import app  # Ваш основной файл приложения
 
 client = TestClient(app)

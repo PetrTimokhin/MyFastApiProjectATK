@@ -24,7 +24,7 @@ class UserAfterRegister(UserBaseAuth):
     model_config = ConfigDict(from_attributes=True)
 
 
-class UserRegister(UserBaseAuth):
+class UserForRegister(UserBaseAuth):
     password: str = Field(..., min_length=6)
 
 

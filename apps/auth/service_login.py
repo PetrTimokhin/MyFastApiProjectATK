@@ -1,18 +1,25 @@
 from typing import Dict, Any, Optional
 
-from apps.database.repository_db import get_user_by_email_from_db
+from DATABASES.db_postgres.connect_to_db import get_session
 from apps.auth.repository_hash import verify_hashed_password, get_password_hash
 from apps.auth.repository_token import create_access_token, \
     create_refresh_token
+# from apps.user_for_db_dict.repository_for_db_dict import \
+#     get_user_by_email_from_db
+
+from apps.user.repository import UserRepository
+
+# для работы с методами UserRepository
+user_repo = UserRepository(get_session())
 
 
-def authenticate_user(email: str,
-                      password: str) -> Optional[Dict[str, Any]]:
+async def authenticate_user(email: str,
+                            password: str) -> Optional[Dict[str, Any]]:
     """Проверяет email и пароль для авторизации.
      Возвращает payload для JWT или None."""
     try:
         # 1. Получаем пользователя с hashed_password)
-        user_by_email = get_user_by_email_from_db(email=email)
+        user_by_email = await user_repo.get_user_by_email_from_db(email=email)
         # возвращает словарь с (id, username, email, password) или None
 
         if not user_by_email:

@@ -1,7 +1,7 @@
 """База Данных"""""
 from typing import Dict
 
-from apps.user.schemas import User
+from apps.user_for_db_dict.schemas import User
 from settings.settings import settings
 
 
@@ -68,6 +68,7 @@ class ContextManagerDB:
     def __exit__(self, exc_type, exc, tb):
         # print(f"[DB DISCONNECT] отсоединение от {self.settings.db_address}")
         print("[DB DISCONNECT] соединение с БД закрыто!")
+
 
 # Контекстный менеджер для инициализации (полезно для реальных БД)
 # @asynccontextmanager

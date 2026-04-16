@@ -7,17 +7,24 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_MINUTES: int = 120  # минут
+    DB_HOST: str
+    DB_PORT: int
+    DB_USER: str
+    DB_PASS: str
+    DB_NAME: str
 
-    DB_HOST: str = 'localhost'
-    DB_PORT: int = 5432
-    DB_USER: str = 'myDataBase1'
-    DB_PASS: str = '12345'
-    DB_NAME: str = 'postgres'
+    # DB_HOST: str = 'localhost'
+    # DB_PORT: int = 5432
+    # DB_USER: str = 'myDataBase1'  # 'postgres'
+    # DB_PASS: str = '12345'
+    # DB_NAME: str = 'postgres'
 
     @property
     def db_address(self) -> str:
         return (f'postgresql+asyncpg://'
-                f'{self.DB_USER}:{self.DB_PASS}@{self.DB_HOST}/{self.DB_NAME}')
+                f'{self.DB_USER}:{self.DB_PASS}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}')
+        # с добавлением HOST
+        # return (f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}")
 
     model_config = SettingsConfigDict(
         extra="allow",

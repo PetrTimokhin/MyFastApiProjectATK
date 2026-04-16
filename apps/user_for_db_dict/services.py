@@ -3,13 +3,14 @@ from typing import Optional, List
 from fastapi import HTTPException
 from starlette import status
 
-from apps.user.repository import (get_all_users_from_db,
-                                  get_user_by_id_from_db,
-                                  get_users_by_ids_from_db,
-                                  update_user_in_db, delete_user_from_db,
-                                  create_user_in_db)
-from apps.user.schemas import UserCreate, UserUpdate
-from apps.database.repository_db import get_user_by_email_from_db
+from apps.user_for_db_dict.repository_for_db_dict import (
+    get_all_users_from_db,
+    get_user_by_id_from_db,
+    get_users_by_ids_from_db,
+    update_user_in_db, delete_user_from_db,
+    create_user_in_db, get_user_by_email_from_db)
+
+from apps.user_for_db_dict.schemas import UserCreate, UserUpdate
 
 
 def check_if_user_exists_by_email(email_value: str,
@@ -47,6 +48,7 @@ def get_user_by_email(email: str) -> dict:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail="User not found")
     return user
+
 
 def get_multiple_users(user_ids: List[int]) -> List[dict]:
     return get_users_by_ids_from_db(user_ids)

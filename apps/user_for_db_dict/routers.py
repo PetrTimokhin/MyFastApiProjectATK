@@ -5,9 +5,11 @@ from starlette import status
 from starlette.requests import Request
 
 from apps.auth.service_current_user import get_current_user_data
-from apps.user.schemas import UserCreate, UserResponse, UserUpdate
-from apps.user.services import create_new_user, get_user, get_all_users, \
-    get_multiple_users, update_user_data, delete_user_data, get_user_by_email
+from apps.user_for_db_dict.schemas import UserCreate, UserResponse, UserUpdate
+from apps.user_for_db_dict.services import (create_new_user, get_user,
+                                            get_all_users, get_multiple_users,
+                                            update_user_data, delete_user_data,
+                                            get_user_by_email)
 
 user_router = APIRouter(prefix="/users", tags=["User"])
 

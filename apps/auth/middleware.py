@@ -19,12 +19,13 @@ def get_token_from_header(request: Request) -> str | None:
 
 async def jwt_authentication_middleware(request: Request, call_next):
     """ Функция Middleware."""
-    print('работает middleware!!!')
+    print('Сработала Middleware!!!')
     # 1. Определяем, нужно ли применять аутентификацию
     # Мы пропускаем  всех кроме "/api/v1/users/profile_via_middleware"
     path = request.scope.get("path")
 
     if not path.startswith(PROTECTED_PATHS):
+        print('Middleware пропустила незащищенный роут!!!')
         # Передаем запрос дальше без изменений.
         response = await call_next(request)
         return response
