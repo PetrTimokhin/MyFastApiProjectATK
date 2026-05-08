@@ -3,33 +3,36 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
+    #-------jwt----------
     SECRET_KEY: str
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_MINUTES: int = 120  # минут
+
+    #-------database______
     DB_HOST: str
     DB_PORT: int
     DB_USER: str
     DB_PASS: str
     DB_NAME: str
 
-    # DB_HOST: str = 'localhost'
-    # DB_PORT: int = 5432
-    # DB_USER: str = 'myDataBase1'  # 'postgres'
-    # DB_PASS: str = '12345'
-    # DB_NAME: str = 'postgres'
+    #------test---------
+    TESTING: bool = False
+    TEST_DB_NAME: str = "test_db"
+
 
     @property
     def db_address(self) -> str:
+        if self.TESTING:
+            db_name = self.TEST_DB_NAME
+        else:
+            db_name = self.DB_NAME
         return (f'postgresql+asyncpg://'
-                f'{self.DB_USER}:{self.DB_PASS}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}')
-        # с добавлением HOST
-        # return (f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}")
+                f'{self.DB_USER}:{self.DB_PASS}@{self.DB_HOST}:{self.DB_PORT}/{db_name}')
 
     model_config = SettingsConfigDict(
         extra="allow",
         env_file_encoding="utf-8",
-        # env_file=os.path.abspath(os.path.join(BASE_DIR, ".env")),
         env_file=os.path.abspath(
             os.path.join(
                 os.path.dirname(os.path.dirname(os.path.abspath(__file__))),

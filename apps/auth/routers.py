@@ -1,20 +1,17 @@
 from fastapi import APIRouter, HTTPException, status, Depends, Body
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordRequestForm
+
 # from jwt import PyJWTError
 from jose import jwt, JWTError
 
 from apps.auth.repository_token import decode_token, create_access_token, \
     create_refresh_token
-from apps.auth.schemas import UserForRegister, Token, \
-    UserAfterRegister
+from apps.user.schemas import UserForRegister, UserAfterRegister
+from apps.auth.schemas import Token
 from apps.auth.service_login import create_tokens, authenticate_user
 from apps.auth.service_registry import is_user_exist, register_new_user
 from apps.user.repository import UserRepository
 
-# Настройка OAuth2 для Dependency.
-# Создает экземпляр схемы OAuth2, указывая, что точка, где пользователи могут
-# получить токен (через логин), будет иметь путь /auth/login.
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
 auth_router = APIRouter(prefix="/auth", tags=["Auth"])
 

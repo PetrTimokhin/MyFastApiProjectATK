@@ -30,6 +30,8 @@ async def authenticate_user(email: str,
         # 2. Проверяем пароль
         if not verify_hashed_password(password,
                                       user_by_email['password']):
+            print('Пароль не прошел верификацию! '
+                  'в функции servise_login.authenticate_user')
             return None
 
         jwt_payload_data = {

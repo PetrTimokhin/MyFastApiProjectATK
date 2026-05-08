@@ -8,29 +8,35 @@ class Token(BaseModel):
     token_type: str = "bearer"
     refresh_token: str
 
-
 # class TokenData(BaseModel):
 #     email: Optional[str] = None
 #     scopes: Optional[list[str]] = None
 
 
-class UserBaseAuth(BaseModel):
-    email: EmailStr = Field(..., min_length=3)
+# Эти все модели ушли в user
+# class UserBaseAuth(BaseModel):
+#     email: EmailStr = Field(..., min_length=3)
 
 
-class UserAfterRegister(UserBaseAuth):
-    id: int | None
+# class UserAfterRegister(UserBaseAuth):
+#     id: int | None
+#
+#     model_config = ConfigDict(from_attributes=True)
 
-    model_config = ConfigDict(from_attributes=True)
+#
+# class UserForRegister(UserBaseAuth):
+#     password: str = Field(..., min_length=6)
+#
+#
+# class UserLogin(BaseModel):
+#     email: EmailStr
+#     password: str = Field(..., min_length=6)
+#
+#
+# class UserAfterLogin(BaseModel):
+#     email: EmailStr
+#     id: int
 
-
-class UserForRegister(UserBaseAuth):
-    password: str = Field(..., min_length=6)
-
-
-class UserLogin(BaseModel):
-    email: EmailStr
-    password: str = Field(..., min_length=6)
 
 
 # # Создаем нашу кастомную форму

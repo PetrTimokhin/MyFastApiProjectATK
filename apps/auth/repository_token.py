@@ -2,6 +2,12 @@ from datetime import datetime, timedelta
 from typing import Dict, Any
 from jose import jwt
 from settings.settings import settings
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+
+# Настройка OAuth2 для Dependency.
+# Создает экземпляр схемы OAuth2, указывая, что точка, где пользователи могут
+# получить токен (через логин), будет иметь путь /auth/login.
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
 
 # --- 2. JWT Функции ---

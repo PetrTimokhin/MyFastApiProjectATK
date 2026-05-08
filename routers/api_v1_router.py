@@ -1,6 +1,7 @@
 from apps.auth.routers import auth_router
 from apps.project.routers import project_router
-from apps.user_for_db_dict.routers import user_router
+# from apps.user_for_db_dict.routers import user_router
+from apps.user.routers import user_router
 
 from fastapi import APIRouter
 
