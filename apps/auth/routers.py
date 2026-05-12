@@ -21,15 +21,15 @@ auth_router = APIRouter(prefix="/auth", tags=["Auth"])
                   response_model=UserAfterRegister,
                   status_code=status.HTTP_201_CREATED,
                   summary="Регистрация пользователя")
-def register_user(user_in: UserForRegister):
+async def register_user(user_in: UserForRegister):
     # 1.1 Проверка существования email в БД
-    if is_user_exist(user_in.email):
+    if await is_user_exist(user_in.email):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Email already registered")
 
     # 1.2 Регистрация нового пользователя
-    created_user = register_new_user(user_in)
+    created_user = await register_new_user(user_in)
 
     return created_user
 
@@ -38,7 +38,7 @@ def register_user(user_in: UserForRegister):
 @auth_router.post("/login",
                   response_model=Token,
                   summary="Авторизация пользователя")
-def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
+async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
 # def login_for_access_token(form_data: UserRegister):
     user_payload = authenticate_user(form_data.username, form_data.password)
     # user_payload = authenticate_user(form_data.email, form_data.password)
@@ -50,7 +50,7 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    tokens = create_tokens(user_payload)
+    tokens = await create_tokens(user_payload)
     return tokens
 
 # 3. Обновляет Access Token, используя валидный Refresh Token

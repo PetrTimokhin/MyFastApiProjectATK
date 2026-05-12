@@ -47,7 +47,7 @@ async def authenticate_user(email: str,
         return None
 
 
-def create_tokens(user_payload: Dict[str, Any]) -> Dict[str, str]:
+async def create_tokens(user_payload: Dict[str, Any]) -> Dict[str, str]:
     """Создание токенов access и refresh"""
     access_token = create_access_token(user_payload)
     refresh_token = create_refresh_token(user_payload)
