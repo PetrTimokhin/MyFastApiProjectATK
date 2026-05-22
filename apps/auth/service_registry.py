@@ -10,6 +10,7 @@ from apps.auth.repository_hash import get_password_hash
 from apps.auth.repository_token import decode_token, oauth2_scheme
 from apps.user.schemas import UserForRegister
 from apps.user.repository import UserRepository
+
 # from apps.auth.service_registry import is_user_exist, register_new_user
 
 
@@ -29,15 +30,12 @@ async def register_new_user(user_in: UserForRegister) -> Dict[str, Any]:
     """Хеширует пароль и регистрирует пользователя"""
     hashed_password = get_password_hash(user_in.password)
     user_data_in_dict = user_in.model_dump()
-    user_data_in_dict['password'] = hashed_password
+    user_data_in_dict["password"] = hashed_password
 
     # создание записи в DB c захешированным паролем
     new_user_data = await user_repo.create_user_in_db(**user_data_in_dict)
 
-    return {
-        "id": new_user_data.id,
-        "email": new_user_data.email
-            }
+    return {"id": new_user_data.id, "email": new_user_data.email}
 
 
 def get_current_user_data(token: str = Depends(oauth2_scheme)) -> dict:
@@ -51,9 +49,10 @@ def get_current_user_data(token: str = Depends(oauth2_scheme)) -> dict:
         email: str = payload.get("email")
 
         if user_id is None or email is None:
-            print('Функция get_current_user_data не нашла id или email!')
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                                detail="Invalid token payload")
+            print("Функция get_current_user_data не нашла id или email!")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token payload"
+            )
         return {"user_id": user_id, "email": email}
 
     except JWTError:
@@ -62,6 +61,7 @@ def get_current_user_data(token: str = Depends(oauth2_scheme)) -> dict:
             detail="Invalid authentication credentials",
             headers={"WWW-Authenticate": "Bearer"},
         )
+
 
 ## из конспекта
 # async def get_current_user(token: str = Depends(oauth2_scheme)):
@@ -81,4 +81,3 @@ def get_current_user_data(token: str = Depends(oauth2_scheme)) -> dict:
 #     if user is None:
 #         raise credentials_exception
 #     return user
-

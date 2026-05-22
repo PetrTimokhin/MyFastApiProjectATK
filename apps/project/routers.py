@@ -38,12 +38,16 @@ async def get_projects(
 
 
 @project_router.post("/", response_model=ProjectResponse)
-async def create_project(data: ProjectCreate, service: ProjectService = Depends(get_service)):
+async def create_project(
+    data: ProjectCreate, service: ProjectService = Depends(get_service)
+):
     return await service.create_project(data)
 
 
 @project_router.post("/bulk")
-async def create_many(data: list[ProjectCreate], service: ProjectService = Depends(get_service)):
+async def create_many(
+    data: list[ProjectCreate], service: ProjectService = Depends(get_service)
+):
     return await service.create_many(data)
 
 

@@ -1,4 +1,4 @@
-#apps/external/routers.py
+# apps/external/routers.py
 
 from fastapi import APIRouter, Depends
 from apps.external.posts_service import ExternalPostsService
@@ -12,6 +12,6 @@ def get_external_posts_service():
 
 @ex_router.get("/posts")
 async def get_external_posts(
-        service: ExternalPostsService = Depends(get_external_posts_service)
-                             ):
+    service: ExternalPostsService = Depends(get_external_posts_service),
+):
     return await service.fetch_posts()

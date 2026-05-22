@@ -2,11 +2,13 @@ from pydantic import BaseModel, EmailStr, Field, ConfigDict
 from typing import Optional
 from fastapi.security import OAuth2PasswordRequestForm
 
+
 # Модели для регистрации и логина
 class Token(BaseModel):
     access_token: str
     token_type: str = "bearer"
     refresh_token: str
+
 
 # class TokenData(BaseModel):
 #     email: Optional[str] = None
@@ -36,7 +38,6 @@ class Token(BaseModel):
 # class UserAfterLogin(BaseModel):
 #     email: EmailStr
 #     id: int
-
 
 
 # # Создаем нашу кастомную форму

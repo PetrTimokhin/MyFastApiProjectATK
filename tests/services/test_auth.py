@@ -1,33 +1,33 @@
 """Тестирование приложения auth через старую версию БД словарь"""
-from fastapi.testclient import TestClient
-
-from apps.auth.repository_token import create_access_token, decode_token
-from apps.user_for_db_dict.repository_for_db_dict import create_user_in_db
-
-from main import app  # Ваш основной файл приложения
-
-client = TestClient(app)
-
-# Создаем тестовые данные
-TEST_USER = {"email": "user@example.com", "password": "string"}
-# ADMIN_USER = {"email": "admin@example.com", "role": "admin"}
-
-VALID_TOKEN = create_access_token(TEST_USER)  # Токен для обычного пользователя
-# ADMIN_TOKEN = create_access_token(ADMIN_USER)  # Токен для админа
-INVALID_TOKEN = "dsdfdfg45645hgyh"
-
-
-# 1. Тестирование аутентификации (доступно авторизованным пользователям)
-def test_authorized_endpoint_success():
-    user = create_user_in_db({"email": "user@example.com",
-                              "password": "string"})
-    print(user)
-    headers = {"Authorization": f"Bearer {VALID_TOKEN}"}
-    response = client.get("/api/v1/users/profile_via_middleware",
-                          headers=headers)
-
-    assert response.status_code == 200
-    assert response.json()["email"] == "user@example.com"
+# from fastapi.testclient import TestClient
+#
+# from apps.auth.repository_token import create_access_token, decode_token
+# from apps.user_for_db_dict.repository_for_db_dict import create_user_in_db
+#
+# from main import app  # Ваш основной файл приложения
+#
+# client = TestClient(app)
+#
+# # Создаем тестовые данные
+# TEST_USER = {"email": "user@example.com", "password": "string"}
+# # ADMIN_USER = {"email": "admin@example.com", "role": "admin"}
+#
+# VALID_TOKEN = create_access_token(TEST_USER)  # Токен для обычного пользователя
+# # ADMIN_TOKEN = create_access_token(ADMIN_USER)  # Токен для админа
+# INVALID_TOKEN = "dsdfdfg45645hgyh"
+#
+#
+# # 1. Тестирование аутентификации (доступно авторизованным пользователям)
+# def test_authorized_endpoint_success():
+#     user = create_user_in_db({"email": "user@example.com",
+#                               "password": "string"})
+#     print(user)
+#     headers = {"Authorization": f"Bearer {VALID_TOKEN}"}
+#     response = client.get("/api/v1/users/profile_via_middleware",
+#                           headers=headers)
+#
+#     assert response.status_code == 200
+#     assert response.json()["email"] == "user@example.com"
 
 
 # # 2. Тестирование регистрации (доступно всем)

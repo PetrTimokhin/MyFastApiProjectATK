@@ -1,6 +1,7 @@
-from sqlalchemy import select, func
+from sqlalchemy import select, func, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import load_only, selectinload
 
 from utils.exceptions import NotFoundException, DatabaseException
 from .models import Project
@@ -11,13 +12,33 @@ class ProjectRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
 
+    # async def get_by_id(self, project_id: int) -> Project:
+    #
+    #     # SELECT * FROM projects WHERE id = :project_id;
+    #     """
+    #     SELECT id FROM projects WHERE id = :project_id
+    #     """
+    #     result = await self.session.execute(
+    #         select(Project).where(Project.id == project_id)
+    #     )
+    #     project = result.scalar_one_or_none()
+    #
+    #     if not project:
+    #         raise NotFoundException("Проект не найден")
+    #
+    #     return project
+
     async def get_by_id(self, project_id: int) -> Project:
         """
-        SELECT * FROM projects WHERE id = :project_id;
+        SELECT id FROM projects
+        SELECT * FROM users WHERE id IN (...)
         """
         result = await self.session.execute(
-            select(Project).where(Project.id == project_id)
+            select(Project)
+            .options(load_only(Project.id), selectinload(Project.person))
+            .where(Project.id == project_id)
         )
+
         project = result.scalar_one_or_none()
 
         if not project:
@@ -108,41 +129,106 @@ class ProjectRepository:
 
         return projects
 
-    async def update(self, project_id: int, data: ProjectUpdate):
+# старый вариант update
+    # async def update(self, project_id: int, data: ProjectUpdate):
+    #     """
+    #     UPDATE projects SET ... WHERE id = :project_id;
+    #     """
+    #     project = await self.get_by_id(project_id)
+    #
+    #     for field, value in data.dict(exclude_unset=True).items():
+    #         if field == "create_time":
+    #             continue
+    #         setattr(project, field, value)
+    #
+    #     try:
+    #         await self.session.commit()
+    #         await self.session.refresh(project)
+    #     except Exception:
+    #         await self.session.rollback()
+    #         raise DatabaseException("Ошибка обновления")
+    #
+    #     return project
+
+    async def update(self, project_id: int, data: ProjectUpdate) -> Project:
         """
         UPDATE projects SET ... WHERE id = :project_id;
         """
-        project = await self.get_by_id(project_id)
-
-        for field, value in data.dict(exclude_unset=True).items():
-            if field == "create_time":
-                continue
-            setattr(project, field, value)
+        update_data = data.dict(exclude_unset=True)
+        # запрещаем обновление create_time
+        update_data.pop("create_time", None)
 
         try:
-            await self.session.commit()
-            await self.session.refresh(project)
+            async with self.session as session:
+                async with session.begin():
+                    stmt = (
+                        update(Project)
+                        .where(Project.id == project_id)
+                        .values(**update_data)
+                        .returning(Project)
+                    )
+
+                    result = await session.execute(stmt)
+
+                    project = result.scalar_one_or_none()
+
+                    if not project:
+                        raise NotFoundException("Проект не найден")
+
+                return project
+        except NotFoundException:
+            raise
+
         except Exception:
-            await self.session.rollback()
             raise DatabaseException("Ошибка обновления")
 
-        return project
+# старый вариант delete
+    # async def delete(self, project_id: int):
+    #     """
+    #     DELETE FROM projects WHERE id = :project_id;
+    #     """
+    #     project = await self.get_by_id(project_id)
+    #
+    #     await self.session.delete(project)
+    #
+    #     try:
+    #         await self.session.commit()
+    #     except Exception:
+    #         await self.session.rollback()
+    #         raise DatabaseException("Ошибка удаления")
+    #
+    #     return project
 
-    async def delete(self, project_id: int):
+    async def delete(self, project_id: int) -> Project:
         """
-        DELETE FROM projects WHERE id = :project_id;
+        DELETE FROM projects
+        WHERE id = :project_id
+        RETURNING *;
         """
-        project = await self.get_by_id(project_id)
-
-        await self.session.delete(project)
 
         try:
-            await self.session.commit()
+            async with self.session as session:
+                async with session.begin():
+
+                    stmt = (
+                        delete(Project)
+                        .where(Project.id == project_id)
+                        .returning(Project)
+                    )
+
+                    result = await session.execute(stmt)
+
+                    deleted_project = result.scalar_one_or_none()
+
+                    if not deleted_project:
+                        raise NotFoundException("Проект не найден")
+
+                # commit автоматически
+
+                return deleted_project
+
+        except NotFoundException:
+            raise
+
         except Exception:
-            await self.session.rollback()
             raise DatabaseException("Ошибка удаления")
-
-        return project
-
-
-

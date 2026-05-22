@@ -29,9 +29,7 @@ class UserRepository:
         """
         SELECT * FROM users WHERE id = :user_id;
         """
-        result = await self.session.execute(
-            select(User).where(User.id == user_id)
-        )
+        result = await self.session.execute(select(User).where(User.id == user_id))
         return result.scalar_one_or_none()
 
     async def get_user_by_email_from_db(self, email: str) -> dict | None:
@@ -47,11 +45,10 @@ class UserRepository:
                 "id": user_orm_object.id,
                 "email": user_orm_object.email,
                 "username": user_orm_object.username,
-                "password": user_orm_object.password
+                "password": user_orm_object.password,
             }
         else:
             return None
-
 
 
 # from sqlalchemy import select, delete, update

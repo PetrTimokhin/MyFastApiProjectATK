@@ -1,4 +1,4 @@
-#apps/external/services/posts_service.py
+# apps/external/services/posts_service.py
 # for services tests
 import httpx
 

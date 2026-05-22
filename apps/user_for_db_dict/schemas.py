@@ -1,4 +1,5 @@
 """Модуль для pydantic схем пользователя User"""
+
 from typing import Optional
 
 from pydantic import BaseModel, EmailStr, Field, ConfigDict

@@ -2,8 +2,7 @@ from typing import Dict, Any, Optional, List
 
 from typing import Optional
 
-from DATABASES.db_dict.database_store_dct import ContextManagerDB, \
-    IdCounterUser
+from DATABASES.db_dict.database_store_dct import ContextManagerDB, IdCounterUser
 
 
 def get_user_by_email_from_db(email: str) -> Optional[dict]:
@@ -11,8 +10,8 @@ def get_user_by_email_from_db(email: str) -> Optional[dict]:
         print("Проверка email в базе данных!")
         db_dct = db.get_store()
         for user in db_dct.values():
-            if user['email'] == email:
-                print(f'Пользователь с email: {email} найден!')
+            if user["email"] == email:
+                print(f"Пользователь с email: {email} найден!")
                 return user
         print("Пользователь с таким email не найден!")
         return None
@@ -23,13 +22,15 @@ def create_user_in_db(user_data: dict) -> dict:
         new_id = IdCounterUser._get_next_id()
 
         db_dct = db.get_store()
-        user_data['id'] = new_id
+        user_data["id"] = new_id
         db_dct[new_id] = user_data
 
-        print(f'В БД создан пользователь:\n'
-              f' {new_id}\n'
-              f' {user_data['email']}\n'
-              f' {user_data['password']}')
+        print(
+            f"В БД создан пользователь:\n"
+            f" {new_id}\n"
+            f" {user_data['email']}\n"
+            f" {user_data['password']}"
+        )
 
         return db_dct.get(new_id)
 
@@ -52,8 +53,7 @@ def get_all_users_from_db() -> List[dict]:
         return list(db_dct.values())
 
 
-def update_user_in_db(user_id: int,
-                      update_data: dict) -> Optional[dict]:
+def update_user_in_db(user_id: int, update_data: dict) -> Optional[dict]:
     with ContextManagerDB() as db:
         db_dct = db.get_store()
         if user_id not in db_dct:

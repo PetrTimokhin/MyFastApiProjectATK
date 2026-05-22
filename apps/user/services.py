@@ -26,8 +26,6 @@ class UserService:
         return user is not None
 
 
-
-
 # from typing import Optional, List
 #
 # from fastapi import HTTPException

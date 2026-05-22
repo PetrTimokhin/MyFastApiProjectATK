@@ -2,8 +2,8 @@ from typing import Dict, Any, Optional
 
 from DATABASES.db_postgres.connect_to_db import get_session
 from apps.auth.repository_hash import verify_hashed_password, get_password_hash
-from apps.auth.repository_token import create_access_token, \
-    create_refresh_token
+from apps.auth.repository_token import create_access_token, create_refresh_token
+
 # from apps.user_for_db_dict.repository_for_db_dict import \
 #     get_user_by_email_from_db
 
@@ -13,37 +13,36 @@ from apps.user.repository import UserRepository
 user_repo = UserRepository(get_session())
 
 
-async def authenticate_user(email: str,
-                            password: str) -> Optional[Dict[str, Any]]:
+async def authenticate_user(email: str, password: str) -> Optional[Dict[str, Any]]:
     """Проверяет email и пароль для авторизации.
-     Возвращает payload для JWT или None."""
+    Возвращает payload для JWT или None."""
     try:
         # 1. Получаем пользователя с hashed_password)
         user_by_email = await user_repo.get_user_by_email_from_db(email=email)
         # возвращает словарь с (id, username, email, password) или None
 
         if not user_by_email:
-            print('Пользователь c email не найден! '
-                  'servise_login.authenticate_user')
+            print("Пользователь c email не найден! " "servise_login.authenticate_user")
             return None
 
         # 2. Проверяем пароль
-        if not verify_hashed_password(password,
-                                      user_by_email['password']):
-            print('Пароль не прошел верификацию! '
-                  'в функции servise_login.authenticate_user')
+        if not verify_hashed_password(password, user_by_email["password"]):
+            print(
+                "Пароль не прошел верификацию! "
+                "в функции servise_login.authenticate_user"
+            )
             return None
 
         jwt_payload_data = {
-            "user_id": user_by_email['id'],
-            "email": user_by_email['email']
+            "user_id": user_by_email["id"],
+            "email": user_by_email["email"],
         }
 
         # 3. Возвращаем данные для JWT payload
         return jwt_payload_data
 
     except Exception as e:
-        print(e, 'ошибка в функции verify_user_credentials auth/service_login')
+        print(e, "ошибка в функции verify_user_credentials auth/service_login")
         return None
 
 
@@ -53,8 +52,3 @@ async def create_tokens(user_payload: Dict[str, Any]) -> Dict[str, str]:
     refresh_token = create_refresh_token(user_payload)
 
     return {"access_token": access_token, "refresh_token": refresh_token}
-
-
-
-
-

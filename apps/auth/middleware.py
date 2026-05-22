@@ -4,7 +4,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 
 from apps.auth.repository_token import decode_token
 
-PROTECTED_PATHS = ('/api/v1/users/profile_via_middleware',)
+PROTECTED_PATHS = ("/api/v1/users/profile_via_middleware",)
 # if path.startswith("/docs") or path.startswith("/openapi.json"):
 
 
@@ -18,14 +18,14 @@ def get_token_from_header(request: Request) -> str | None:
 
 
 async def jwt_authentication_middleware(request: Request, call_next):
-    """ Функция Middleware."""
-    print('Сработала Middleware!!!')
+    """Функция Middleware."""
+    print("Сработала Middleware!!!")
     # 1. Определяем, нужно ли применять аутентификацию
     # Мы пропускаем  всех кроме "/api/v1/users/profile_via_middleware"
     path = request.scope.get("path")
 
     if not path.startswith(PROTECTED_PATHS):
-        print('Middleware пропустила незащищенный роут!!!')
+        print("Middleware пропустила незащищенный роут!!!")
         # Передаем запрос дальше без изменений.
         response = await call_next(request)
         return response
@@ -37,8 +37,7 @@ async def jwt_authentication_middleware(request: Request, call_next):
         # Токен отсутствует, но это не публичный маршрут.
         # Если это НЕ публичный маршрут, требуем аутентификации.
         return JSONResponse(
-            content={
-                "detail": "Необходим действительный токен аутентификации"},
+            content={"detail": "Необходим действительный токен аутентификации"},
             status_code=status.HTTP_401_UNAUTHORIZED,
         )
 
@@ -60,10 +59,9 @@ async def jwt_authentication_middleware(request: Request, call_next):
     email = payload.get("email", None)
     if not email:
         return JSONResponse(
-            status_code=403,
-            content={"detail": "Invalid token payload"}
+            status_code=403, content={"detail": "Invalid token payload"}
         )
-    request.state.email = payload.get('email', None)
+    request.state.email = payload.get("email", None)
     print("request.state.__dict__:", request.state.__dict__)
 
     # Передаем запрос дальше
