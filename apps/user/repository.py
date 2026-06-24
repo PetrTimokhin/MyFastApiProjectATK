@@ -1,16 +1,17 @@
-from typing import AsyncGenerator
-
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
+from DATABASES.db_postgres.connect_to_db import get_session
 from apps.user.models import User
-from apps.user.schemas import UserCreate
 
 
 class UserRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
+
+    # def __init__(self):
+    #     self.session: AsyncSession = Depends(get_session)
 
     async def create_user_in_db(self, email: str, password: str) -> User:
         """

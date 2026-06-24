@@ -6,7 +6,6 @@ import sys
 # from asgi_lifespan import LifespanManager
 # from httpx import AsyncClient, ASGITransport
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-
 from main import app
 from DATABASES.db_postgres.base import Base
 from DATABASES.db_postgres.connect_to_db import get_session

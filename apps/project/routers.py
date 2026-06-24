@@ -15,7 +15,8 @@ async def get_service(session: AsyncSession = Depends(get_session)):
 
 
 @project_router.get("/{project_id}", response_model=ProjectResponse)
-async def get_project(project_id: int, service: ProjectService = Depends(get_service)):
+async def get_project(project_id: int,
+                      service: ProjectService = Depends(get_service)):
     return await service.get_project(project_id)
 
 

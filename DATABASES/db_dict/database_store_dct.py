@@ -1,7 +1,7 @@
 """База Данных"""""
 from typing import Dict
 
-from apps.user_for_db_dict.schemas import User
+from apps.user.schemas import UserBase
 from settings.settings import settings
 
 
@@ -51,7 +51,7 @@ class DataBaseStore:
     def get_store(self):
         return type(self).db._get()
 
-    def set_store(self, value: Dict[int, User]):
+    def set_store(self, value: Dict[int, UserBase]):
         type(self).db._set(value)
 
 
@@ -69,14 +69,6 @@ class ContextManagerDB:
         # print(f"[DB DISCONNECT] отсоединение от {self.settings.db_address}")
         print("[DB DISCONNECT] соединение с БД закрыто!")
 
-
-# Контекстный менеджер для инициализации (полезно для реальных БД)
-# @asynccontextmanager
-# async def lifespan(app: FastAPI):
-#     # Здесь могла бы быть инициализация БД
-#     print("Application startup...")
-#     yield  # yield db например
-#     print("Application shutdown...")
 
 # # проверка работы модуля
 # if __name__ == '__main__':

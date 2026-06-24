@@ -2,7 +2,7 @@ from fastapi import Request, status, Depends
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 
-from apps.auth.repository_token import decode_token
+from apps.auth.manager_token import decode_token
 
 PROTECTED_PATHS = ("/api/v1/users/profile_via_middleware",)
 # if path.startswith("/docs") or path.startswith("/openapi.json"):

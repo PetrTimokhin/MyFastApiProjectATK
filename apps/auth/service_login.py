@@ -1,11 +1,9 @@
 from typing import Dict, Any, Optional
 
 from DATABASES.db_postgres.connect_to_db import get_session
-from apps.auth.repository_hash import verify_hashed_password, get_password_hash
-from apps.auth.repository_token import create_access_token, create_refresh_token
+from apps.auth.manager_hash import verify_hashed_password, get_password_hash
+from apps.auth.manager_token import create_access_token, create_refresh_token
 
-# from apps.user_for_db_dict.repository_for_db_dict import \
-#     get_user_by_email_from_db
 
 from apps.user.repository import UserRepository
 

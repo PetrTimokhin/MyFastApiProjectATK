@@ -6,8 +6,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
 from DATABASES.db_postgres.connect_to_db import get_session
-from apps.auth.repository_hash import get_password_hash
-from apps.auth.repository_token import decode_token, oauth2_scheme
+from apps.auth.manager_hash import get_password_hash
+from apps.auth.manager_token import decode_token, oauth2_scheme
 from apps.user.schemas import UserForRegister
 from apps.user.repository import UserRepository
 

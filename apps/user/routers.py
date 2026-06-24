@@ -3,8 +3,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from DATABASES.db_postgres.connect_to_db import get_session
 from .repository import UserRepository
-from .services import UserService
-from .schemas import UserCreate, UserResponse
+from apps.user.services import UserService
+from apps.user.schemas import UserCreate, UserResponse
 
 # router = APIRouter(prefix="/users", tags=["Users"])
 user_router = APIRouter(prefix="/users", tags=["User"])

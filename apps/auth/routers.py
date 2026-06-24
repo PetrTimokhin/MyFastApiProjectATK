@@ -4,7 +4,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 # from jwt import PyJWTError
 from jose import jwt, JWTError
 
-from apps.auth.repository_token import (
+from apps.auth.manager_token import (
     decode_token,
     create_access_token,
     create_refresh_token,

@@ -16,11 +16,16 @@ async def get_session() -> AsyncSession:
         yield session
 
 
+# функция используется в main.py в async def lifespan
 async def create_tables():
     async with async_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
 
+# если нужно удалить все таблицы например после остановки приложения
+async def drop_tables():
+    async with async_engine.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
 
 
 

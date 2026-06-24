@@ -4,8 +4,8 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import load_only, selectinload
 
 from utils.exceptions import NotFoundException, DatabaseException
-from .models import Project
-from .schemas import ProjectCreate, ProjectUpdate
+from apps.project.models import Project
+from apps.project.schemas import ProjectCreate, ProjectUpdate
 
 
 class ProjectRepository:
@@ -130,25 +130,25 @@ class ProjectRepository:
         return projects
 
 # старый вариант update
-    # async def update(self, project_id: int, data: ProjectUpdate):
-    #     """
-    #     UPDATE projects SET ... WHERE id = :project_id;
-    #     """
-    #     project = await self.get_by_id(project_id)
-    #
-    #     for field, value in data.dict(exclude_unset=True).items():
-    #         if field == "create_time":
-    #             continue
-    #         setattr(project, field, value)
-    #
-    #     try:
-    #         await self.session.commit()
-    #         await self.session.refresh(project)
-    #     except Exception:
-    #         await self.session.rollback()
-    #         raise DatabaseException("Ошибка обновления")
-    #
-    #     return project
+    async def update(self, project_id: int, data: ProjectUpdate):
+        """
+        UPDATE projects SET ... WHERE id = :project_id;
+        """
+        project = await self.get_by_id(project_id)
+
+        for field, value in data.dict(exclude_unset=True).items():
+            if field == "create_time":
+                continue
+            setattr(project, field, value)
+
+        try:
+            await self.session.commit()
+            await self.session.refresh(project)
+        except Exception:
+            await self.session.rollback()
+            raise DatabaseException("Ошибка обновления")
+
+        return project
 
     async def update(self, project_id: int, data: ProjectUpdate) -> Project:
         """

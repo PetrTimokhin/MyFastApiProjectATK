@@ -1,5 +1,5 @@
 from utils.exceptions import NotFoundException
-from .repository import ProjectRepository
+from apps.project.repository import ProjectRepository
 
 
 class ProjectService:
